@@ -1,0 +1,353 @@
+{
+    "info": "task",
+    "sub_dirname": "tooluseseries-potpick",
+    "full_obs_keys": ["robot0_eef_pos", "robot0_eef_vel",
+                      "robot0_gripper_qpos", "robot0_gripper_qvel",
+                      "cube_pos", "cube_quat",
+                      "tool_pos", "tool_quat",
+                      "pot_pos", "pot_quat",
+                      "marker0_pos", "marker1_pos", "marker2_pos"],
+    "obs_keys": ["robot0_eef_pos", "robot0_gripper_qpos",
+                 "cube_pos", "tool_pos", "pot_pos"],
+    "goal_keys": ["goal_pos", "remain_t"],
+    "seed": 0,
+    "cuda_id": 0,
+    "env_params": {
+        "env_name": "ToolUseSeries",
+        "num_envs": 10,
+        "manipulation_env_params": {
+            "robots": "UR5e",
+            "controller_name": "OSC_POSITION",
+            "gripper_types": "RethinkGripper",
+            "control_freq": 20,
+            "use_camera_obs": false,
+            "camera_names": "agentview",
+            "camera_heights": 128,
+            "camera_widths": 128,
+            "camera_depths": false,
+            "reward_scale": 1.0,
+            "sparse_reward": false,
+            "num_markers": 3,
+            "marker_x_range": [-0.3, 0.3],
+            "marker_y_range": [-0.3, 0.3],
+            "causal_env_params": {
+                "horizon": 250,
+                "num_movable_objects": 3,
+                "num_unmovable_objects": 1,
+                "num_random_objects": 0,
+                "cube_x_range": [-0.25, 0.25],
+                "cube_y_range": [-0.25, 0.25],
+                "table_full_size": [0.8, 1.2, 0.05],
+                "table_offset": [0.0, 0.0, 0.8],
+                "normalization_range": [[-0.5, -0.5, 0.7], [0.5, 0.5, 1.1]]
+            },
+            "tool_use_env_params": {
+                "horizon": 400,
+                "cube_x_range": [0.1, 0.2],
+                "cube_y_range": [-0.2, -0.1],
+                "tool_x_range": [-0.2, 0.0],
+                "tool_y_range": [-0.3, -0.2],
+                "table_full_size": [1.0, 1.2, 0.05],
+                "table_offset": [0.0, 0.0, 0.8],
+                "normalization_range": [[-0.5, -0.7, 0.7], [0.5, 0.7, 1.2]],
+                "terminal_state": "POT_PICKING"
+            }
+        },
+        "physical_env_params": {
+            "num_objects": 5,
+            "num_weights": 5,
+            "width": 5,
+            "height": 5,
+            "render_type": "shapes",
+            "mode": "Train",
+            "max_steps": 100,
+            "dense_reward": true
+        },
+        "chemical_env_params": {
+            "num_objects": 1,
+            "num_colors": 5,
+            "use_cuda": false,
+            "width": 29,
+            "height": 29,
+            "shape_size": 16,
+            "continuous_pos": false,
+            "width_std": 1,
+            "height_std": 1,
+            "render_image": false,
+            "render_type": "shapes",
+            "max_steps": 50,
+            "num_target_interventions": 30,
+            "graph": "",
+            "match_type": "all",
+            "dense_reward": true
+        }
+    },
+    "training_params": {
+        "inference_algo": "contrastive_cmi",
+        "rl_algo": "sac",
+        "rew_pred_algo": "true",
+        "object_level_obs": false,
+        "load_inference": "",
+        "load_reward_predictor": "",
+        "load_policy": "",
+        "load_replay_buffer": "",
+        "load_imagination_replay_buffer": "",
+        "load_tensorboard_log": "",
+        "total_step": 30000000,
+        "init_step": 100000,
+        "collect_transitions": true,
+        "train_prop": 0.9,
+        "num_inference_opt_steps": 0,
+        "num_reward_opt_steps": 0,
+        "reduce_reward_opt_step": 1000000,
+        "num_policy_opt_steps": 10,
+        "log_freq": 100,
+        "saving_freq": 1000000,
+        "plot_freq": 100000,
+        "replay_buffer_params": {
+            "capacity": 5000000,
+            "prioritized_buffer": false,
+            "inference_alpha": 0.5,
+            "reward_alpha": 0.5
+        }
+    },
+    "testing_params": {
+        "num_test_envs": 5,
+        "num_test_eps": 50,
+        "policy_eval_freq": 100000,
+        "eval_freq": 20
+    },
+    "encoder_params": {
+        "encoder_type": "identity"
+    },
+    "decoder_params": {
+        "use_decoder": false
+    },
+    "inference_params": {
+        "num_pred_steps": 2,
+        "batch_size": 32,
+        "lr": 1e-4,
+        "log_std_min": -13,
+        "log_std_max": 30,
+        "grad_clip_norm": 20,
+        "cmi_params": {
+            "feature_fc_dims": [128, 128],
+            "generative_fc_dims": [128, 128],
+            "causal_opt_freq": 10,
+            "eval_tau": 0.999,
+            "CMI_threshold": 0.015
+        },
+        "attn_params": {
+            "feature_fc_dims": [256, 256],
+            "generative_fc_dims": [256, 256],
+            "attn_dim": 32,
+            "num_heads": 8,
+            "attn_out_dim": 256,
+            "attn_use_bias": false,
+            "gumbel_select": false
+        },
+        "nps_params": {
+            "num_rules": 4,
+            "rule_embed_dim": 32,
+            "rule_selector_dim": 32,
+            "cond_selector_dim": 32,
+            "feature_fc_dims": [64],
+            "rule_fc_dims": [64, 32]
+        },
+        "reg_params": {
+            "use_mask": false,
+            "adjacency_init": 0.7,
+            "interv_mask_init": 0.9,
+            "lambda_M_init": 0.0,
+            "lambda_M_final": 0.01,
+            "lambda_I_init": 0.0,
+            "lambda_I_final": 0.01,
+            "mask_threshold": 0.5,
+            "reg_annealing_start": 200000,
+            "reg_annealing_end": 200001
+        },
+        "mlp_params": {
+            "fc_dims": [256, 256, 256]
+        },
+        "gnn_params": {
+            "node_attr_dim": 256,
+            "edge_attr_dim": 256,
+            "embedder_dims": [],
+            "edge_net_dims": [256, 256],
+            "node_net_dims": [256, 256],
+            "projector_dims": []
+        }
+    },
+    "contrastive_params": {
+        "num_pred_steps": 1,
+        "batch_size": 32,
+        "lr": 3e-4,
+        "gradient_through_pred_steps": false,
+        "num_negative_samples": 512,
+        "grad_clip_norm": 20,
+        "num_pred_samples": 512,
+        "num_pred_iters": 2,
+        "pred_sigma_init": 0.33,
+        "pred_sigma_shrink": 0.5,
+        "modular_params": {
+            "fc_dims": [256, 256, 256]
+        },
+        "cmi_params": {
+            "learn_bo": false,
+            "aggregation": "max",
+            "feature_fc_dims": [128, 128],
+            "encoding_fc_dims": [128],
+            "mask_opt_freq": 1,
+            "full_opt_freq": 10,
+            "causal_opt_freq": 50,
+            "energy_norm_reg_coef": 1e-6,
+            "sa_grad_reg_coef": 1e-6,
+            "delta_grad_reg_coef": 1e-6,
+            "eval_num_negative_samples": 8192,
+            "eval_tau": 0.995,
+            "CMI_threshold": 0.02
+        }
+    },
+    "reward_predictor_params":{
+        "batch_size": 64,
+        "lr": 3e-4,
+        "use_next_state": true,
+        "grad_clip_norm": 10,
+        "eval_demo_only": true,
+        "dense_params":{
+            "fc_dims": [128, 128, 128],
+            "activations": ["relu", "relu", "relu"]
+        },
+        "contrastive_params":{
+            "feature_fc_dims": [256, 256],
+            "sag_encoding_fc_dims": [256, 256],
+            "rew_encoding_fc_dims": [256, 256],
+            "num_negative_samples": 512,
+            "num_pred_samples": 8192,
+            "num_pred_iters": 1,
+            "pred_sigma_init": 0.33,
+            "pred_sigma_shrink": 0.5,
+            "mask_opt_freq": 0,
+            "full_opt_freq": 1,
+            "causal_opt_freq": 0,
+            "energy_norm_reg_coef": 1e-6,
+            "sag_grad_reg_coef": 0,
+            "reward_grad_reg_coef": 0e-6,
+            "eval_num_negative_samples": 8192,
+            "eval_tau": 0.995,
+            "CMI_threshold": 0.01
+        },
+        "cmi_params":{
+            "feature_fc_dims": [128, 128],
+            "rew_predictor_fc_dims": [128, 128],
+            "mask_opt_freq": 1,
+            "full_opt_freq": 1,
+            "causal_opt_freq": 10,
+            "eval_tau": 0.995,
+            "CMI_threshold": 0.004
+        },
+        "denoised_params": {
+            "x_reg_coef": 1e-4
+        },
+        "tia_params":{
+            "num_irrelevant_opt_steps": 5,
+            "relevant_reg_coef": 1e-4
+        }
+    },
+    "policy_params": {
+        "num_td_steps": 1,
+        "batch_size": 256,
+        "grad_clip_norm": 10,
+        "lr": 1e-4,
+        "use_demo": false,
+        "sac_params": {
+            "actor_dims": [256, 256],
+            "critic_dims": [256, 256],
+            "actor_lr": 1e-4,
+            "critic_lr": 1e-4,
+            "tau": 0.005,
+            "gamma": 0.99,
+            "alpha": 0.1,
+            "auto_alpha": false,
+            "alpha_lr": 1e-5,
+            "alpha_schedule": true,
+            "alpha_start": 0.9, 
+            "alpha_finish": 0.1,
+            "alpha_decay": 12,
+            "target_update_freq": 1,
+            "use_imagination": false,
+            "imag_gen_batch_size": 32,
+            "imag_update_batch_size": 128,
+            "num_imagination_updates": 1,
+            "use_dynamics_abstraction": false,
+            "use_reward_abstraction": false,
+            "use_partition_abstraction": false,
+            "abstraction_update_freq": 50000,
+            "reset_alpha": true
+        },
+        "imagination_replay_buffer_params":{
+            "capacity": 500000
+        },
+        "hippo_params": {
+            "skill_names": ["lift", "push"],
+            "skill_probs": [0.5, 0.5],
+            "skill_params": {
+                "controller_scale": 0.05,
+                "reach_threshold": 0.01,
+                "lift_height": 0.9,
+                "disturbance_prob": 0.3,
+                "num_block_steps": 3,
+                "global_xyz_bound": [[-0.30, -0.40, 0.81], [0.20, 0.40, 1.00]],
+                "gripper_skill_params": {
+                    "num_max_steps": 4
+                },
+                "lift_skill_params": {
+                    "num_max_steps": 100,
+                    "num_reach_steps": 2,
+                    "num_grasp_steps": 10,
+                    "global_param_bound": [[-0.30, -0.40, 0.81], [0.20, 0.40, 1.00]]
+                },
+                "pick_place_skill_params": {
+                    "num_max_steps": 120,
+                    "place_target_name": "pot",
+                    "num_reach_steps": 2,
+                    "num_grasp_steps": 10,
+                    "num_arrived_steps": 2,
+                    "num_release_steps": 2
+                },
+                "hook_skill_params": {
+                    "num_max_steps": 130,
+                    "tool_name": "tool",
+                    "tool_relative_pos": [0.16, 0.05, 0.00],
+                    "num_reach_steps": 2,
+                    "num_grasp_steps": 10,
+                    "delta_xyz_scale": [0.15, 0.15, 0.01]
+                },
+                "push_skill_params": {
+                    "num_max_steps": 150,
+                    "global_param_bound": [[-0.30, -0.40, 0.81], [0.20, 0.40, 0.85]],
+                    "delta_xyz_scale": [0.15, 0.15, 0.02]
+                }
+            }
+        },
+        "cem_params": {
+            "std_scale": 1.0,
+            "num_horizon_steps": 3,
+            "num_iters": 5,
+            "num_candidates": 64,
+            "num_top_candidates": 32,
+            "action_noise": 0.03,
+            "action_noise_eps": 0.05
+        }
+    },
+    "scripted_policy_params": {
+        "demo_prob_init": 0.0,
+        "demo_prob_final": 0.0,
+        "demo_annealing_start": 500000,
+        "demo_annealing_end": 500001,
+        "pick_place_params": {
+            "explore_eps": 0.1,
+            "release_prob": 0.01
+        }
+    }
+}
